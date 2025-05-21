@@ -6,7 +6,7 @@
 
 ## 功能特点
 
-- 使用 AWS CDK 自动创建和部署基础设施
+- 使用 AWS CDK 自动创建和持续部署基础设施
 - 基于环境的部署（测试环境和生产环境）
 
 ## 前置要求
@@ -98,3 +98,21 @@ yarn deploy-web:prod
 ```
 
 注意：在部署之前，请确保您的 AWS 凭证已正确配置。部署过程将使用相应 `.env.*` 文件中的环境特定配置。
+
+## 创建的 AWS 资源
+
+部署后，以下资源将在您的 AWS 账户中创建：
+
+- **CloudFormation** - 中心化管理部署相关的所有 AWS 资源
+- **S3 Bucket** - 存储了网站的静态文件
+- **CloudFront Distribution** - 全球 CDN，并配置了 SSL 证书
+- **Route 53 中的自定义域名 HostedZone 里的 A 和 AAAA 记录** - 自定义域名对所创建 CloudFront 域名的重定向
+
+CloudFormation 示例截图：
+
+![CloudFormation Stack Screenshot](./examples/cloud-formation-screenshot.png)
+
+您可以通过以下方式访问您的网站：
+
+- 所创建的 CloudFront 域名（需要在 AWS 控制台中查看）：`https://{distribution-domain-name}`
+- 自定义域名（如果已配置）：`https://{your-domain-name}`

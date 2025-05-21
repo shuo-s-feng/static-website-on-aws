@@ -1,6 +1,6 @@
 import path from "path";
 import { App } from "aws-cdk-lib";
-import { StaticWebsiteStack } from "../src/stacks/statis-website";
+import { StaticWebsiteStack } from "../src/stacks/static-website";
 import { getEnvVariables } from "../src/utils/get-env-variables";
 
 const envVars = getEnvVariables();

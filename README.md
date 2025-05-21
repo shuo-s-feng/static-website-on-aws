@@ -6,7 +6,7 @@ A TypeScript-based AWS CDK project for deploying static websites to AWS infrastr
 
 ## Features
 
-- Automated infrastructure creation and deployment using AWS CDK
+- Automated infrastructure creation and continuous deployment using AWS CDK
 - Environment-based deployment (staging and production)
 
 ## Prerequisites
@@ -98,3 +98,21 @@ yarn deploy-web:prod
 ```
 
 Note: Make sure your AWS credentials are properly configured before deployment. The deployment process will use the environment-specific configuration from the respective `.env.*` file.
+
+## Created AWS Resources
+
+After deployment, the following resources will be created in your AWS account:
+
+- **CloudFormation** - Centralized management of all AWS resources related to deployment
+- **S3 Bucket** - Stores the static files of the website
+- **CloudFront Distribution** - Global CDN with SSL certificate configuration
+- **A and AAAA records in Route 53 HostedZone** - Custom domain redirection to the created CloudFront domain
+
+CloudFormation example screenshot:
+
+![CloudFormation Stack Screenshot](./examples/cloud-formation-screenshot.png)
+
+You can access your website through:
+
+- CloudFront domain (check in AWS Console): `https://{distribution-domain-name}`
+- Custom domain (if configured): `https://{your-domain-name}`
