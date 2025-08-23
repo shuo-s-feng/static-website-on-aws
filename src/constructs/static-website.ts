@@ -1,4 +1,5 @@
 import { Construct } from "constructs";
+import { Annotations } from "aws-cdk-lib";
 import { Certificate } from "aws-cdk-lib/aws-certificatemanager";
 import {
   SSLMethod,
@@ -28,6 +29,7 @@ const WEBSITE_INDEX_DOCUMENT = "index.html";
 export interface StaticWebsiteProps {
   domainName?: string;
   domainCertificateArn?: string;
+  domainAutoConfigureRoute53?: boolean;
   sourcePath: string;
 }
 
@@ -37,7 +39,12 @@ export class StaticWebsite extends Construct {
 
   constructor(scope: Construct, id: string, props: StaticWebsiteProps) {
     super(scope, id);
-    const { domainName, domainCertificateArn, sourcePath } = props;
+    const {
+      domainName,
+      domainCertificateArn,
+      domainAutoConfigureRoute53,
+      sourcePath,
+    } = props;
 
     // S3 bucket for hosting the static website
     this.bucket = new Bucket(this, "Bucket", {
@@ -65,7 +72,7 @@ export class StaticWebsite extends Construct {
       priceClass: PriceClass.PRICE_CLASS_ALL,
     };
 
-    if (domainName && domainCertificateArn) {
+    if (domainCertificateArn) {
       distributionProps = {
         ...distributionProps,
         certificate: Certificate.fromCertificateArn(
@@ -73,12 +80,27 @@ export class StaticWebsite extends Construct {
           "Certificate",
           domainCertificateArn
         ),
-        domainNames: [domainName],
         sslSupportMethod: SSLMethod.SNI,
         minimumProtocolVersion: SecurityPolicyProtocol.TLS_V1_2_2019,
       };
-    } else if (domainName || domainCertificateArn) {
-      throw Error("Either domain name or cerificate arn is empty");
+    }
+
+    if (domainName) {
+      distributionProps = {
+        ...distributionProps,
+        domainNames: [domainName],
+      };
+    }
+
+    if (domainName && !domainCertificateArn) {
+      Annotations.of(this).addWarning(
+        "Custom domain partially configured. The domain name is provided but the certificate is not. Skipping SSL configuration."
+      );
+    }
+    if (!domainName && domainCertificateArn) {
+      Annotations.of(this).addWarning(
+        "Custom domain partially configured. The certificate is provided but the domain name is not. Skipping custom domain setup."
+      );
     }
 
     // CloudFront distribution that caches and serves website bucket content with custom domain
@@ -88,7 +110,7 @@ export class StaticWebsite extends Construct {
       distributionProps
     );
 
-    if (domainName && domainCertificateArn) {
+    if (domainName && domainAutoConfigureRoute53) {
       // Hosted Zone for the website custom domain
       const hostedZone = HostedZone.fromLookup(this, "HostedZone", {
         domainName,

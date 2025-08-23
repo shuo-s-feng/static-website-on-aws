@@ -22,3 +22,7 @@ yarn-error.log*
 
 # IDE
 .vscode/
+
+# Env files
+.env*
+!.env.example

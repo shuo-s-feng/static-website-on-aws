@@ -51,39 +51,18 @@ yarn install
 
 ## Environment Configuration
 
-The project uses environment-specific configuration files to manage different deployment environments. Update the following files in the root directory:
+This project uses environment-specific configuration files to manage different deployment environments.
 
-### `.environment.staging`
-
-```bash
-AWS_ACCOUNT='<AWS_ACCOUNT_ID, e.g. 123456789012>'
-AWS_REGION='<AWS_REGION, e.g. us-east-1>'
-STATIC_WEBSITE_APP_NAME='<APP_NAME, e.g. StaticWebsite>'
-# STATIC_WEBSITE_DOMAIN_NAME='<DOMAIN_NAME, e.g. example.com>'
-# STATIC_WEBSITE_DOMAIN_CERT_ARN='<SSL_CERTIFICATE_ARN, e.g. arn:aws:acm:region:account:certificate/xxxx-xxxx-xxxx-xxxx>'
-STATIC_WEBSITE_SOURCE_PATH='<SOURCE_PATH, e.g. ./examples/website-dist>'
-```
-
-### `.environment.prod`
-
-```bash
-AWS_ACCOUNT='<AWS_ACCOUNT_ID, e.g. 123456789012>'
-AWS_REGION='<AWS_REGION, e.g. us-east-1>'
-STATIC_WEBSITE_APP_NAME='<APP_NAME, e.g. StaticWebsite>'
-# STATIC_WEBSITE_DOMAIN_NAME='<DOMAIN_NAME, e.g. example.com>'
-# STATIC_WEBSITE_DOMAIN_CERT_ARN='<SSL_CERTIFICATE_ARN, e.g. arn:aws:acm:region:account:certificate/xxxx-xxxx-xxxx-xxxx>'
-STATIC_WEBSITE_SOURCE_PATH='<SOURCE_PATH, e.g. ./examples/website-dist>'
-```
-
-Replace the placeholder values with your actual configuration. The commented lines are optional and can be uncommented if you want to use a custom domain with SSL certificate. Feel free to use the example website assets at [./examples/website-dist](./examples/website-dist) as a starting point.
+- Copy `.env.example` to `.env.staging` and/or `.env.prod` and fill in values
+- The deployment commands will read the file based on `NODE_ENV`
 
 ## Deployment
 
 ### Environment Setup
 
-1. Update the environment configuration files as described above
+1. Create `.env.staging` and/or `.env.prod` from `.env.example`
 2. Fill in the appropriate values for your AWS account and website configuration
-3. If using a custom domain, uncomment and configure the domain-related variables
+3. If using a custom domain, provide a domain and optionally a certificate ARN
 
 ### Staging Environment
 
@@ -105,8 +84,8 @@ After deployment, the following resources will be created in your AWS account:
 
 - **CloudFormation** - Centralized management of all AWS resources related to deployment
 - **S3 Bucket** - Stores the static files of the website
-- **CloudFront Distribution** - Global CDN with SSL certificate configuration
-- **A and AAAA records in Route 53 HostedZone** - Custom domain redirection to the created CloudFront domain
+- **CloudFront Distribution** - Global CDN with optional SSL certificate and custom domain configuration
+- **A and AAAA records in Route 53 HostedZone** (optional) - Custom domain redirection to the created CloudFront domain
 
 CloudFormation example screenshot:
 
@@ -114,5 +93,5 @@ CloudFormation example screenshot:
 
 You can access your website through:
 
-- CloudFront domain (check in AWS Console): `https://{distribution-domain-name}`
+- CloudFront domain (see stack outputs): `https://{distribution-domain-name}`
 - Custom domain (if configured): `https://{your-domain-name}`

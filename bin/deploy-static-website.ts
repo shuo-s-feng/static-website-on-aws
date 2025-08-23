@@ -28,6 +28,8 @@ if (
       region: envVars.region,
       domainName: envVars.staticWebsiteDomainName,
       domainCertificateArn: envVars.staticWebsiteDomainCertificateARN,
+      domainAutoConfigureRoute53:
+        envVars.staticWebsiteDomainAutoConfigureRoute53,
     },
     "\n"
   );
@@ -36,6 +38,7 @@ if (
     sourcePath: staticWebsiteAbsoluteSourcePath,
     domainName: envVars.staticWebsiteDomainName,
     domainCertificateArn: envVars.staticWebsiteDomainCertificateARN,
+    domainAutoConfigureRoute53: envVars.staticWebsiteDomainAutoConfigureRoute53,
     env: {
       account: envVars.account,
       region: envVars.region,

@@ -51,39 +51,18 @@ yarn install
 
 ## 环境配置
 
-项目使用特定于环境的配置文件来管理不同的部署环境。在根目录更新以下文件：
+本项目使用特定于环境的配置文件来管理不同的部署环境。
 
-### `.env.staging`
-
-```bash
-AWS_ACCOUNT='<AWS_账户ID，例如：123456789012>'
-AWS_REGION='<AWS 区域，例如：us-east-1>'
-STATIC_WEBSITE_APP_NAME='<应用名称，例如：StaticWebsite>'
-# STATIC_WEBSITE_DOMAIN_NAME='<域名，例如：example.com>'
-# STATIC_WEBSITE_DOMAIN_CERT_ARN='<SSL证书ARN，例如：arn:aws:acm:region:account:certificate/xxxx-xxxx-xxxx-xxxx>'
-STATIC_WEBSITE_SOURCE_PATH='<源代码路径，例如：./examples/website-dist>'
-```
-
-### `.env.prod`
-
-```bash
-AWS_ACCOUNT='<AWS 账户ID，例如：123456789012>'
-AWS_REGION='<AWS 区域，例如：us-east-1>'
-STATIC_WEBSITE_APP_NAME='<应用名称，例如：StaticWebsite>'
-# STATIC_WEBSITE_DOMAIN_NAME='<域名，例如：example.com>'
-# STATIC_WEBSITE_DOMAIN_CERT_ARN='<SSL证书ARN，例如：arn:aws:acm:region:account:certificate/xxxx-xxxx-xxxx-xxxx>'
-STATIC_WEBSITE_SOURCE_PATH='<源代码路径，例如：./examples/website-dist>'
-```
-
-请将占位符值替换为您的实际配置。注释行是可选的，如果您想使用带有 SSL 证书的自定义域名，可以取消注释。您可以使用 [./examples/website-dist](./examples/website-dist) 目录下的示例网站资源作为起点。
+- 复制 `.env.example` 为 `.env.staging` 和/或 `.env.prod` 并填写变量
+- 部署命令会根据 `NODE_ENV` 读取对应的文件
 
 ## 部署
 
 ### 环境设置
 
-1. 按照上述说明更新环境配置文件
+1. 基于 `.env.example` 创建 `.env.staging` 和/或 `.env.prod`
 2. 填写适合您 AWS 账户和网站配置的值
-3. 如果使用自定义域名，请取消注释并配置域名相关变量
+3. 如果使用自定义域名，提供域名并可选提供证书 ARN
 
 ### 测试环境
 
@@ -105,8 +84,8 @@ yarn deploy-web:prod
 
 - **CloudFormation** - 中心化管理部署相关的所有 AWS 资源
 - **S3 Bucket** - 存储了网站的静态文件
-- **CloudFront Distribution** - 全球 CDN，并配置了 SSL 证书
-- **Route 53 中的自定义域名 HostedZone 里的 A 和 AAAA 记录** - 自定义域名对所创建 CloudFront 域名的重定向
+- **CloudFront Distribution** - 全球 CDN，支持可选的 SSL 证书与自定义域名配置
+- **Route 53 中的 A 和 AAAA 记录**（可选）- 自定义域名指向所创建的 CloudFront 域名
 
 CloudFormation 示例截图：
 
@@ -114,5 +93,5 @@ CloudFormation 示例截图：
 
 您可以通过以下方式访问您的网站：
 
-- 所创建的 CloudFront 域名（需要在 AWS 控制台中查看）：`https://{distribution-domain-name}`
+- CloudFront 域名（参见堆栈输出）：`https://{distribution-domain-name}`
 - 自定义域名（如果已配置）：`https://{your-domain-name}`

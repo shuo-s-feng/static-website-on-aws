@@ -16,6 +16,8 @@ export const getEnvVariables = () => {
     staticWebsiteAppName: env.STATIC_WEBSITE_APP_NAME ?? "StaticWebsite",
     staticWebsiteDomainName: env.STATIC_WEBSITE_DOMAIN_NAME ?? "",
     staticWebsiteDomainCertificateARN: env.STATIC_WEBSITE_DOMAIN_CERT_ARN ?? "",
+    staticWebsiteDomainAutoConfigureRoute53:
+      env.STATIC_WEBSITE_DOMAIN_AUTO_CONFIGURE_ROUTE53 === "true",
     staticWebsiteSourcePath: env.STATIC_WEBSITE_SOURCE_PATH ?? "",
   };
 
