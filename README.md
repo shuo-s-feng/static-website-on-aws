@@ -56,6 +56,19 @@ This project uses environment-specific configuration files to manage different d
 - Copy `.env.example` to `.env.staging` and/or `.env.prod` and fill in values
 - The deployment commands will read the file based on `NODE_ENV`
 
+## Lambda@Edge rewrite (optional)
+
+- Enable path rewrite by setting `STATIC_WEBSITE_USE_LAMBDA_EDGE=true` in your `.env.*`.
+- Behavior: rewrites extensionless paths at any depth during origin request, for example:
+  - `/about` or `/about/` -> `/about.html`
+  - `/articles/foo` or `/articles/foo/` -> `/articles/foo.html`
+- Root `/` and requests with file extensions are not changed.
+
+Notes:
+
+- Lambda@Edge functions must be created in `us-east-1` and may take several minutes to replicate globally after deployment.
+- Set `STATIC_WEBSITE_USE_LAMBDA_EDGE=false` to deploy without Lambda@Edge.
+
 ## Deployment
 
 ### Environment Setup

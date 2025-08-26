@@ -19,6 +19,7 @@ export const getEnvVariables = () => {
     staticWebsiteDomainAutoConfigureRoute53:
       env.STATIC_WEBSITE_DOMAIN_AUTO_CONFIGURE_ROUTE53 === "true",
     staticWebsiteSourcePath: env.STATIC_WEBSITE_SOURCE_PATH ?? "",
+    staticWebsiteUseLambdaEdge: env.STATIC_WEBSITE_USE_LAMBDA_EDGE === "true",
   };
 
   return envVariables;

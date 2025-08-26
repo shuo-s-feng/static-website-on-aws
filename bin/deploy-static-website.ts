@@ -30,6 +30,7 @@ if (
       domainCertificateArn: envVars.staticWebsiteDomainCertificateARN,
       domainAutoConfigureRoute53:
         envVars.staticWebsiteDomainAutoConfigureRoute53,
+      useLambdaEdge: envVars.staticWebsiteUseLambdaEdge,
     },
     "\n"
   );
@@ -39,6 +40,7 @@ if (
     domainName: envVars.staticWebsiteDomainName,
     domainCertificateArn: envVars.staticWebsiteDomainCertificateARN,
     domainAutoConfigureRoute53: envVars.staticWebsiteDomainAutoConfigureRoute53,
+    useLambdaEdge: envVars.staticWebsiteUseLambdaEdge,
     env: {
       account: envVars.account,
       region: envVars.region,

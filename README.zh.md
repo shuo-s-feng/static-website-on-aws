@@ -56,6 +56,19 @@ yarn install
 - 复制 `.env.example` 为 `.env.staging` 和/或 `.env.prod` 并填写变量
 - 部署命令会根据 `NODE_ENV` 读取对应的文件
 
+## 可选：Lambda@Edge 重写
+
+- 在 `.env.*` 中设置 `STATIC_WEBSITE_USE_LAMBDA_EDGE=true` 可启用路径重写。
+- 行为：在 Origin Request 阶段将任意层级的无扩展名路径重写为 `.html`，例如：
+  - `/about` 或 `/about/` -> `/about.html`
+  - `/articles/foo` 或 `/articles/foo/` -> `/articles/foo.html`
+- 根路径 `/` 与已包含扩展名的请求不会被修改。
+
+说明：
+
+- Lambda@Edge 函数需要在 `us-east-1` 创建，部署后在全球边缘节点复制可能需要数分钟。
+- 将 `STATIC_WEBSITE_USE_LAMBDA_EDGE=false` 可禁用该功能。
+
 ## 部署
 
 ### 环境设置

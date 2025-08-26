@@ -8,7 +8,11 @@ import {
   Distribution,
   DistributionProps,
   ViewerProtocolPolicy,
+  AccessLevel,
+  LambdaEdgeEventType,
 } from "aws-cdk-lib/aws-cloudfront";
+import { experimental as cloudfrontExperimental } from "aws-cdk-lib/aws-cloudfront";
+import { Code, Runtime } from "aws-cdk-lib/aws-lambda";
 import {
   HostedZone,
   ARecord,
@@ -31,6 +35,7 @@ export interface StaticWebsiteProps {
   domainCertificateArn?: string;
   domainAutoConfigureRoute53?: boolean;
   sourcePath: string;
+  useLambdaEdge?: boolean;
 }
 
 export class StaticWebsite extends Construct {
@@ -44,6 +49,7 @@ export class StaticWebsite extends Construct {
       domainCertificateArn,
       domainAutoConfigureRoute53,
       sourcePath,
+      useLambdaEdge,
     } = props;
 
     // S3 bucket for hosting the static website
@@ -58,7 +64,10 @@ export class StaticWebsite extends Construct {
       comment: "CloudFront distribution for hosting a static website",
       defaultRootObject: WEBSITE_INDEX_DOCUMENT,
       defaultBehavior: {
-        origin: S3BucketOrigin.withOriginAccessControl(this.bucket),
+        origin: S3BucketOrigin.withOriginAccessControl(this.bucket, {
+          // Add list access to avoid 403 errors when accessing non-existent files in the bucket
+          originAccessLevels: [AccessLevel.READ, AccessLevel.LIST],
+        }),
         viewerProtocolPolicy: ViewerProtocolPolicy.REDIRECT_TO_HTTPS,
       },
       errorResponses: [
@@ -71,6 +80,31 @@ export class StaticWebsite extends Construct {
       ],
       priceClass: PriceClass.PRICE_CLASS_ALL,
     };
+
+    if (useLambdaEdge) {
+      distributionProps = {
+        ...distributionProps,
+        defaultBehavior: {
+          ...distributionProps.defaultBehavior,
+          edgeLambdas: [
+            {
+              functionVersion: new cloudfrontExperimental.EdgeFunction(
+                this,
+                "OriginRequestEdgeFunction",
+                {
+                  runtime: Runtime.NODEJS_20_X,
+                  code: Code.fromAsset("src/lambda/origin-request"),
+                  handler: "index.handler",
+                  description:
+                    "Rewrite URIs to support directory indexes and extensionless .html at origin request",
+                }
+              ).currentVersion,
+              eventType: LambdaEdgeEventType.ORIGIN_REQUEST,
+            },
+          ],
+        },
+      };
+    }
 
     if (domainCertificateArn) {
       distributionProps = {
