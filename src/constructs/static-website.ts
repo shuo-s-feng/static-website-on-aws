@@ -103,6 +103,18 @@ export class StaticWebsite extends Construct {
             },
           ],
         },
+        // Exclude static assets from invoking Lambda@Edge to avoid
+        // LambdaLimitExceeded under parallel requests for many chunk files.
+        additionalBehaviors: {
+          ...(distributionProps.additionalBehaviors ?? {}),
+          // Any request with a dot in the path (has an extension)
+          "*.*": {
+            origin: S3BucketOrigin.withOriginAccessControl(this.bucket, {
+              originAccessLevels: [AccessLevel.READ, AccessLevel.LIST],
+            }),
+            viewerProtocolPolicy: ViewerProtocolPolicy.REDIRECT_TO_HTTPS,
+          },
+        },
       };
     }
 
